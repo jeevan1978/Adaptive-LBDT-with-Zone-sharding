@@ -12,7 +12,7 @@
 
 ---
 
-## 📌 Project Overview & Academic Context
+##  Project Overview & Academic Context
 
 This repository contains an **independent Python implementation and research extension** of the **Lightweight Blockchain-Based Data Trading (LBDT)** scheme originally proposed by **Chen et al.** (*IEEE Transactions on Mobile Computing*, 2025).
 
@@ -25,7 +25,7 @@ This project implements the LBDT protocol from first principles and **directly e
 
 ---
 
-## 🚀 Key Contributions of this Implementation
+##  Key Contributions of this Implementation
 
 * **Protocol Translation & Python Architecture**:
   Translated the theoretical specifications of LBDT into a full Python architecture integrated with TraCI and Eclipse SUMO vehicular traffic simulations.
