@@ -141,28 +141,28 @@ gantt
 ```mermaid
 sequenceDiagram
     autonumber
-    participant Buyer as Vehicle OBU (Buyer)
-    participant Seller as Vehicle OBU (Seller)
+    actor Buyer as Vehicle OBU (Buyer)
+    actor Seller as Vehicle OBU (Seller)
     participant AuctionEngine as Zone Double Auction Engine
     participant RepEngine as Reputation & ML Classifier
     participant Leader as VRF Elected Leader (RSU)
     participant Committee as Gosig BFT Committee (RSUs)
     participant Ledger as Parallel Ledger
 
-    Buyer->>AuctionEngine: Submit Bid (BP_j, Quantity, Zone)
-    Seller->>AuctionEngine: Submit Ask (SP_i, Sensor Delay Delta_t)
-    AuctionEngine->>RepEngine: Query Rep_i & ML Honesty (p_honest)
-    RepEngine-->>AuctionEngine: Return Evaluated Reputation Score
-    AuctionEngine->>AuctionEngine: Apply Bid Loss Penalty: SP'_i = SP_i + loss(Delta_t, Rep_i)
-    AuctionEngine->>AuctionEngine: Sort Bids (desc) & Asks (asc); Match Clearing Price p_win
+    Buyer->>AuctionEngine: Submit Bid (BP, Quantity, Zone)
+    Seller->>AuctionEngine: Submit Ask (SP, Sensor Delay Delta-t)
+    AuctionEngine->>RepEngine: Query Rep Score and ML Honesty
+    RepEngine-->>AuctionEngine: Return Evaluated Trust Metrics
+    AuctionEngine->>AuctionEngine: Apply Bid Loss Penalty (Adjust SP)
+    AuctionEngine->>AuctionEngine: Match Bids and Compute Clearing Price
     AuctionEngine->>Leader: Dispatch Matched Trade Batch
     Leader->>Leader: Assemble Candidate Microblock
-    Leader->>Committee: Phase 1: Proposal (Block + Aggregate Spec)
-    Committee-->>Leader: Phase 2: Prepare (Signature Share)
-    Leader->>Committee: Phase 3: Tentative Commit (Combined Multsig)
-    Committee-->>Leader: Phase 4: Commit (Final Ack)
+    Leader->>Committee: Phase 1 - Proposal (Block and Multisig Spec)
+    Committee-->>Leader: Phase 2 - Prepare (Signature Share)
+    Leader->>Committee: Phase 3 - Tentative Commit (Aggregated Multisig)
+    Committee-->>Leader: Phase 4 - Commit (Final Ack)
     Leader->>Ledger: Commit Microblock (6s round)
-    Note over Ledger: Every 60s, Keyblock is mined via PoW to checkpoint reputation
+    Note over Ledger: Every 60s, Keyblock is mined via PoW for governance
 ```
 
 ---
@@ -173,32 +173,42 @@ sequenceDiagram
 
 #### 1. Exponential Aging Interaction Score
 For any vehicular node $i$, historical interactions decay exponentially to prevent nodes from resting on old reputation while turning malicious:
-$$r_n = \left( \sum_{k=1}^{N_{trades}} \gamma^{n - 1 - k} \cdot \delta_k \right) \cdot \ln(N_{peers})$$
+
+$$r_n = \left( \sum_{k=1}^{N_{\text{trades}}} \gamma^{n - 1 - k} \cdot \delta_k \right) \cdot \ln(N_{\text{peers}})$$
+
 - $\gamma = 0.95$: Aging decay factor.
 - $\delta_k \in \{+0.1, -2.0\}$: Evaluation score ($+0.1$ for honest fulfillment, $-2.0$ penalty for cheated/corrupted payload).
-- $N_{peers}$: Number of active trading partners.
+- $N_{\text{peers}}$: Number of active trading partners.
 
 #### 2. Adaptive Gompertz Growth Function
-$$Rep_i(r_n) = a_{adapt} \cdot \exp\left( - b_{adapt} \cdot \exp\left( - c \cdot r_n \right) \right)$$
+
+$$Rep_i(r_n) = a_{\text{adapt}} \cdot \exp\left( - b_{\text{adapt}} \cdot \exp\left( - c \cdot r_n \right) \right)$$
+
 - $c = 0.5$: Intrinsic growth rate constant.
 
 #### 3. Machine Learning Honesty Modulation
 To prevent oscillating/on-off strategic adversaries, a trained **Logistic Regression / Ensemble Classifier** evaluates a 4D vehicle telemetry vector:
-$$\mathbf{x}_i = \begin{bmatrix} \text{honest\_trades}_i \\ \text{cheated\_trades}_i \\ \text{norm\_drop\_rate}_i \\ \text{bft\_responses}_i \end{bmatrix}$$
 
-The predicted honesty probability $p_{honest} = \sigma(\mathbf{w}^T \mathbf{x}_i + b)$ dynamically adapts the Gompertz parameters:
-$$a_{adapt} = a \cdot p_{honest} \quad (a = 1.0)$$
-$$b_{adapt} = b + 3.0 \cdot (1 - p_{honest}) \quad (b = 0.7)$$
+$$\mathbf{x}_i = \begin{bmatrix} \text{honest-trades}_i \\ \text{cheated-trades}_i \\ \text{norm-drop-rate}_i \\ \text{bft-responses}_i \end{bmatrix}$$
 
-> When a node acts maliciously, $p_{honest} \to 0$, causing $a_{adapt} \to 0$ and $b_{adapt} \to 3.7$, instantly collapsing $Rep_i$ to near zero regardless of previous accumulated $r_n$.
+The predicted honesty probability $p_{\text{honest}} = \sigma(\mathbf{w}^T \mathbf{x}_i + b)$ dynamically adapts the Gompertz parameters:
+
+$$a_{\text{adapt}} = a \cdot p_{\text{honest}} \quad (a = 1.0)$$
+
+$$b_{\text{adapt}} = b + 3.0 \cdot (1 - p_{\text{honest}}) \quad (b = 0.7)$$
+
+> When a node acts maliciously, $p_{\text{honest}} \to 0$, causing $a_{\text{adapt}} \to 0$ and $b_{\text{adapt}} \to 3.7$, instantly collapsing $Rep_i$ to near zero regardless of previous accumulated $r_n$.
 
 ---
 
 ### 3.2 Reputation-Aware Double Auction Engine
 
 Buyers submit bids $BP_j$; sellers submit asks $SP_i$ with sensing latency $\Delta t_i$. To protect buyers, seller asking prices are adjusted with a non-linear loss penalty:
+
 $$loss_i(\Delta t_i, Rep_i) = \alpha_1 \cdot (\Delta t_i)^{\beta_1} + \alpha_2 \cdot (1 - Rep_i)^{\beta_2}$$
+
 $$SP'_i = SP_i + loss_i$$
+
 - Default weights: $\alpha_1 = 0.5, \beta_1 = 1.2, \alpha_2 = 1.0, \beta_2 = 2.0$.
 
 #### Clearing Price Determination:
@@ -206,22 +216,28 @@ $$SP'_i = SP_i + loss_i$$
 2. Sort adjusted asks ascending: $SP'_1 \le SP'_2 \le \dots \le SP'_S$.
 3. Find maximum trade index $m$ such that $BP_m \ge SP'_m$.
 4. Settlement clearing price:
-$$p_{win} = \min\left( BP_m, \; SP'_{m+1} \right)$$
+
+$$p_{\text{win}} = \min\left( BP_m, \; SP'_{m+1} \right)$$
 
 ---
 
 ### 3.3 EC-VRF Leader Election & Gosig BFT Consensus
 
-1. **EC-VRF Leader Election:**  
-   Every round, candidate RSUs calculate a Verifiable Random Function over the SECP256k1 curve:
-   $$\text{seed} = \text{SHA256}(\text{LastKeyblockHash} \parallel \text{Step} \parallel \text{ZoneID})$$
-   $$H_{vrf} = \text{VRF\_Hash}(SK_i, \text{seed})$$
-   The node possessing the minimum valid $H_{vrf}$ proof is selected as round leader without network contention.
+#### 1. EC-VRF Leader Election
+Every round, candidate RSUs calculate a Verifiable Random Function over the SECP256k1 curve:
 
-2. **Gosig BFT 4-Phase Consensus:**  
-   Consists of *Proposal*, *Prepare*, *Tentative Commit*, and *Commit*. Through aggregated multisignatures:
-   $$M_{bft} = 5N - 3$$
-   Strictly bounded linear message complexity ($O(N)$), enabling microblock validation in under **2.5 seconds**.
+$$\text{seed} = \text{SHA256}(\text{LastKeyblockHash} \parallel \text{Step} \parallel \text{ZoneID})$$
+
+$$H_{\text{vrf}} = \text{VRF}(SK_i, \text{seed})$$
+
+The node possessing the minimum valid $H_{\text{vrf}}$ proof is selected as round leader without network contention.
+
+#### 2. Gosig BFT 4-Phase Consensus
+Consists of *Proposal*, *Prepare*, *Tentative Commit*, and *Commit*. Through aggregated multisignatures:
+
+$$M_{\text{bft}} = 5N - 3$$
+
+Strictly bounded linear message complexity ($O(N)$), enabling microblock validation in under **2.5 seconds**.
 
 ---
 
