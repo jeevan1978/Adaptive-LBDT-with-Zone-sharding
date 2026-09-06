@@ -1,13 +1,44 @@
 # Adaptive LBDT with Zone Sharding
 
-> **A Lightweight Blockchain-Based Data Trading Scheme in Internet of Vehicles Using Proof-of-Reputation and Dynamic Zone Sharding**  
-> *Empirical implementation, simulation engine, and research dashboard based on IEEE Transactions on Mobile Computing (2025).*
+> **Independent Implementation and Extension of the Lightweight Blockchain-Based Data Trading (LBDT) Protocol with Dynamic Zone Sharding**  
+> *Translating the LBDT research framework into Python, integrating an adaptive ML honesty classifier, and implementing the authors' proposed future-work direction: Geographic Zone Sharding.*
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Simulation: SUMO](https://img.shields.io/badge/Simulation-SUMO%201.26+-orange.svg)](https://eclipse.dev/sumo/)
 [![V2X: Veins / OMNeT++](https://img.shields.io/badge/V2X-Veins%20%2F%20OMNeT++-blueviolet.svg)](https://veins.car2x.org/)
 [![Tests](https://img.shields.io/badge/Unit%20Tests-Passing%20(6%2F6)-brightgreen.svg)]()
+[![Paper DOI](https://img.shields.io/badge/DOI-10.1109%2FTMC.2024.3497934-blue.svg)](https://doi.org/10.1109/TMC.2024.3497934)
+
+---
+
+## 📌 Project Overview & Academic Context
+
+This repository contains an **independent Python implementation and research extension** of the **Lightweight Blockchain-Based Data Trading (LBDT)** scheme originally proposed by **Chen et al.** (*IEEE Transactions on Mobile Computing*, 2025).
+
+In the original paper, the authors developed the foundational theoretical protocol (combining parallel chains, Gompertz reputation aging, Gosig BFT consensus, and double auctions) and evaluated it on a single-committee network. Crucially, the authors identified **sharding as a vital future-work direction** to overcome throughput bottlenecks as the number of Roadside Units (RSUs) and vehicles scales across urban networks.
+
+This project implements the LBDT protocol from first principles and **directly executes on that proposed future-work direction** by designing and evaluating an **Adaptive Geographic Zone Sharding** architecture:
+
+* **Original Protocol & Theoretical Framework:** Developed by W. Chen, W. Yang, M. Xiao, L. Xue, and S. Wang ([IEEE TMC 2025](https://doi.org/10.1109/TMC.2024.3497934)).
+* **This Repository:** Independent engineering implementation, zone-sharding extension, ML honesty classification pipeline, and real-time dashboard developed by **Jeevan Reddy T** as an academic capstone / Summer Colloquium project at ABV-IIITM Gwalior.
+
+---
+
+## 🚀 Key Contributions of this Implementation
+
+* **Protocol Translation & Python Architecture**:
+  Translated the theoretical specifications of LBDT into a full Python architecture integrated with TraCI and Eclipse SUMO vehicular traffic simulations.
+* **Reputation & Auction Pipeline**:
+  Implemented the Aged Gompertz Reputation model, exponential interaction decay ($\gamma = 0.95$), penalty drops, and the non-linear double auction loss-penalty matching engine.
+* **Machine Learning Honesty Classifier**:
+  Integrated an adaptive ML classifier (evaluating 4D telemetry: honest trades, cheated trades, drop rates, BFT responses) to dynamically modulate Gompertz bounds and immediately neutralize oscillating adversaries.
+* **Adaptive Zone-Based Sharding (Extension of Proposed Future Work)**:
+  Implemented physical-region zone sharding where each urban shard runs localized double auctions and Gosig BFT sub-committees, featuring autonomous **zone-splitting** ($U_z > 0.85$) and **zone-merging** ($U_z < 0.20$).
+* **Parallel Blockchain Ledger**:
+  Implemented concurrent Keychains (PoW-mined 60s governance epochs) and Microchains (sub-2.5s Gosig BFT trading rounds with aggregated multi-signatures).
+* **Live Telemetry Dashboard**:
+  Built an interactive modern Glassmorphic Web Dashboard (Chart.js + FastAPI WebSocket server) for real-time monitoring of transactions, latency, and shard topology.
 
 ---
 
@@ -35,7 +66,7 @@
   - [6.5 OMNeT++ / Veins C++ Simulation](#65-omnet--veins-c-simulation)
   - [6.6 Docker Deployment](#66-docker-deployment)
 - [7. Experimental Validation & Results](#7-experimental-validation--results)
-- [8. Academic Report & Publications](#8-academic-report--publications)
+- [8. Academic References & Citation](#8-academic-references--citation)
 
 ---
 
@@ -290,8 +321,7 @@ Adaptive-LBDT-with-Zone-sharding/
 │   ├── docker-compose.yml          # Multi-service simulation orchestrator
 │   └── entrypoint.sh               # Container startup script
 │
-├── docs/                           # Research documents & publications
-│   ├── LBDT.pdf                    # Published IEEE research paper (TMC 2025)
+├── docs/                           # Project presentation & academic artifacts
 │   └── 2023BCS069_Jeevan_Reddy_T.pdf # Academic defense & project presentation
 │
 ├── report/                         # Full LaTeX Academic Thesis / MTP Report
@@ -478,11 +508,28 @@ The empirical evaluation of Adaptive LBDT was performed on a **10 km &times; 10 
 
 ---
 
-## 8. Academic Report & Publications
+## 8. Academic References & Citation
 
-- **IEEE Transactions on Mobile Computing (2025):** Full paper available at [`docs/LBDT.pdf`](docs/LBDT.pdf).
-- **Academic Thesis / Project Report:** Complete LaTeX source with all 6 chapters available in [`report/`](report/).
-- **Seminar Presentation:** Project defense slides available at [`docs/2023BCS069_Jeevan_Reddy_T.pdf`](docs/2023BCS069_Jeevan_Reddy_T.pdf).
+### Foundational Research Paper
+If citing the original LBDT protocol and parallel-chain concept, please reference the original research publication:
+
+```bibtex
+@article{chen2025lbdt,
+  author    = {Chen, Wei and Yang, Wen and Xiao, Ming and Xue, Liying and Wang, Shie},
+  journal   = {IEEE Transactions on Mobile Computing}, 
+  title     = {LBDT: A Lightweight Blockchain-Based Data Trading Scheme in Internet of Vehicles Using Proof-of-Reputation}, 
+  year      = {2025},
+  volume    = {24},
+  number    = {4},
+  pages     = {3192-3207},
+  doi       = {10.1109/TMC.2024.3497934}
+}
+```
+*Official IEEE Xplore Link:* [https://doi.org/10.1109/TMC.2024.3497934](https://doi.org/10.1109/TMC.2024.3497934)
+
+### Implementation Deliverables & Academic Thesis
+- **Academic Thesis / Capstone Report:** Full LaTeX source code and compiled documentation with all mathematical formulations available in [`report/`](report/).
+- **Seminar Presentation:** Slides and defense deck available in [`docs/2023BCS069_Jeevan_Reddy_T.pdf`](docs/2023BCS069_Jeevan_Reddy_T.pdf).
 
 ---
 
