@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LBDT Simulation & Performance Dashboard</title>
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js for interactive simulation -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Navigation Header -->
+        <header class="dashboard-header">
+            <div class="header-logo">
+                <span class="logo-accent">LBDT</span>
+                <span class="logo-text">Research Dashboard</span>
+            </div>
+            <div class="status-indicator">
+                <span class="pulse-dot"></span>
+                <span class="status-label">SUMO Simulation Linked</span>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Content -->
+        <main class="dashboard-main">
+            
+            <!-- Section 1: Overview & Metrics -->
+            <section class="overview-section">
+                <div class="section-header">
+                    <h2>Empirical Validation Overview</h2>
+                    <p class="section-desc">Key metrics harvested from the 1,000-step local SUMO vehicular simulation run (10,000 Vehicles, 400 RSUs, 10 km &times; 10 km grid map).</p>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric-card glass-card">
+                        <div class="metric-value" id="metric-latency">2.56s</div>
+                        <div class="metric-label">Avg Transaction Latency</div>
+                        <div class="metric-hint">Paper standard: ~4.0s</div>
+                    </div>
+                    <div class="metric-card glass-card">
+                        <div class="metric-value" id="metric-keyblocks">2</div>
+                        <div class="metric-label">Keyblocks Mined</div>
+                        <div class="metric-hint">Keychain (60s Epochs)</div>
+                    </div>
+                    <div class="metric-card glass-card">
+                        <div class="metric-value" id="metric-microblocks">24</div>
+                        <div class="metric-label">Microblocks Committed</div>
+                        <div class="metric-hint">Microchain (6s Rounds)</div>
+                    </div>
+                    <div class="metric-card glass-card">
+                        <div class="metric-value" id="metric-bft">1,352</div>
+                        <div class="metric-label">BFT Messages Exchanged</div>
+                        <div class="metric-hint">Efficient gossip consensus</div>
+                    </div>
+                    <div class="metric-card glass-card">
+                        <div class="metric-value success-text" id="metric-safety">Verified</div>
+                        <div class="metric-label">Committee Safety</div>
+                        <div class="metric-hint">Malicious reputation &lt; 33.3%</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Interactive Playground -->
+            <section class="playground-section">
+                <div class="section-header">
+                    <h2>Interactive Reputation Simulator</h2>
+                    <p class="section-desc">Dynamically explore the math from the paper. Adjust parameters below to see the Gompertz Reputation and Aging calculations update in real-time.</p>
+                </div>
+                
+                <div class="playground-grid">
+                    <!-- Controls Card -->
+                    <div class="controls-card glass-card">
+                        <h3>Model Parameters</h3>
+                        
+                        <div class="control-group">
+                            <label for="param-gamma">Aging Decay Factor (&gamma;): <span id="val-gamma" class="param-val">0.95</span></label>
+                            <input type="range" id="param-gamma" min="0.5" max="0.99" step="0.01" value="0.95">
+                            <span class="control-hint">Controls memory decay; values closer to 1 retain history longer.</span>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="param-c">Gompertz Growth Rate (c): <span id="val-c" class="param-val">0.50</span></label>
+                            <input type="range" id="param-c" min="0.1" max="1.5" step="0.05" value="0.50">
+                            <span class="control-hint">Determines slope/speed of reputation build-up.</span>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="param-b">Displacement Parameter (b): <span id="val-b" class="param-val">0.70</span></label>
+                            <input type="range" id="param-b" min="0.1" max="2.0" step="0.05" value="0.70">
+                            <span class="control-hint">Controls starting reputation score at n=0 (exp(-b)).</span>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="param-peers">Active Peers (N<sub>peers</sub>): <span id="val-peers" class="param-val">100</span></label>
+                            <input type="range" id="param-peers" min="10" max="1000" step="10" value="100">
+                            <span class="control-hint">Scale factor based on number of active nodes (ln(N_peers)).</span>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="param-pos">Positive Delta (&delta;<sub>pos</sub>): <span id="val-pos" class="param-val">0.1</span></label>
+                            <input type="range" id="param-pos" min="0.02" max="0.5" step="0.01" value="0.1">
+                            <span class="control-hint">Reputation increment for honest transactions.</span>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="param-neg">Negative Delta (&delta;<sub>neg</sub>): <span id="val-neg" class="param-val">-2.0</span></label>
+                            <input type="range" id="param-neg" min="-5.0" max="-0.5" step="0.1" value="-2.0">
+                            <span class="control-hint">Reputation penalty for malicious actions.</span>
+                        </div>
+                    </div>
+
+                    <!-- Live Chart Card -->
+                    <div class="chart-card glass-card">
+                        <h3>Simulated Malicious Node Scenario</h3>
+                        <div class="interactive-chart-container">
+                            <canvas id="reputationSimChart"></canvas>
+                        </div>
+                        <div class="scenario-timeline">
+                            <span class="timeline-event pt-0">0: Join (Rep &approx; 0.5)</span>
+                            <span class="timeline-event pt-30">1-30: Honest behavior</span>
+                            <span class="timeline-event pt-31">31-40: Malicious attacks</span>
+                            <span class="timeline-event pt-41">41-60: Honest recovery</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Paper Performance Plots -->
+            <section class="plots-section">
+                <div class="section-header">
+                    <h2>Research Paper Performance Graphs</h2>
+                    <p class="section-desc">High-resolution plots plotted exactly as defined in the paper. Hover to expand details.</p>
+                </div>
+
+                <div class="plots-grid">
+                    <!-- ML Fig 1: ROC Curve -->
+                    <div class="plot-card glass-card">
+                        <div class="plot-img-container">
+                            <img src="data/roc_curve.png" alt="ROC Curve: Logistic Regression Honesty Classifier">
+                        </div>
+                        <div class="plot-info">
+                            <h4>Empirical ML ROC Curve (scikit-learn)</h4>
+                            <p>ROC-AUC curve of the Logistic Regression model trained on 20,369 empirical SUMO vehicular telemetry samples. Demonstrates 99% malicious detection precision.</p>
+                        </div>
+                    </div>
+
+                    <!-- ML Fig 2: Baseline Model Comparison -->
+                    <div class="plot-card glass-card">
+                        <div class="plot-img-container">
+                            <img src="data/model_comparison.png" alt="Model Comparison: Stealth Attack Resilience">
+                        </div>
+                        <div class="plot-info">
+                            <h4>Stealth Attack Model Comparison</h4>
+                            <p>Compares Original LBDT Paper (Fixed Gompertz), Heuristic, and Proposed ML model under stealth packet drop attacks. Demonstrates total isolation of stealth attackers.</p>
+                        </div>
+                    </div>
+
+                    <!-- Fig 8 -->
+                    <div class="plot-card glass-card">
+                        <div class="plot-img-container">
+                            <img src="data/plots/fig_8_reputation.png" alt="Figure 8: Reputation Dynamics">
+                        </div>
+                        <div class="plot-info">
+                            <h4>Figure 8. Reputation Dynamics</h4>
+                            <p>Tracks reputation changes across LBDT (Gompertz), MWSL (linear), and TI-BIoV (arctan) for normal and malicious nodes. Demonstrates rapid penalty and slow recovery in LBDT.</p>
+                        </div>
+                    </div>
+
+                    <!-- Fig 9 -->
+                    <div class="plot-card glass-card">
+                        <div class="plot-img-container">
+                            <img src="data/plots/fig_9_attacks.png" alt="Figure 9: Successful Attacks">
+                        </div>
+                        <div class="plot-info">
+                            <h4>Figure 9. Successful Attacks vs. Adversary Ratio</h4>
+                            <p>Illustrates system safety. PoW fails at 51% (51% attack). MWSL/TI-BIoV fail as committee members are compromised. LBDT isolates malicious nodes through PoR and VRF selection.</p>
+                        </div>
+                    </div>
+
+                    <!-- Fig 10 -->
+                    <div class="plot-card glass-card">
+                        <div class="plot-img-container">
+                            <img src="data/plots/fig_10_latency_blocksize.png" alt="Figure 10: Latency vs Block Size">
+                        </div>
+                        <div class="plot-info">
+                            <h4>Figure 10. Latency vs. Block Size</h4>
+                            <p>Compares block throughput. LBDT employs parallel chains and compact blocks to scale from 0.5s (0.25MB) to 3.0s (32MB) transaction latency, whereas DPoS and PBFT exceed 1,000s.</p>
+                        </div>
+                    </div>
+
+                    <!-- Fig 11 -->
+                    <div class="plot-card glass-card">
+                        <div class="plot-img-container">
+                            <img src="data/plots/fig_11_latency_rsus.png" alt="Figure 11: Latency vs Number of RSUs">
+                        </div>
+                        <div class="plot-info">
+                            <h4>Figure 11. Latency vs. Number of RSUs</h4>
+                            <p>Scale impact of RSUs (100 to 10,000). MWSL rises linearly due to scaling committee size, PoW is constant at 1 hour, and LBDT remains below 4s via its decoupled committee selection.</p>
+                        </div>
+                    </div>
+
+                    <!-- Fig 12 -->
+                    <div class="plot-card glass-card">
+                        <div class="plot-img-container">
+                            <img src="data/plots/fig_12_communication.png" alt="Figure 12: Communication Overhead">
+                        </div>
+                        <div class="plot-info">
+                            <h4>Figure 12. Communication Overhead vs. Vehicles</h4>
+                            <p>Sync overhead in vehicular nodes. LBDT vehicles use SPV headers and only sync transactions related to themselves, mitigating overhead by >90% compared to full blockchain sync.</p>
+                        </div>
+                    </div>
+
+                    <!-- Fig 13 -->
+                    <div class="plot-card glass-card">
+                        <div class="plot-img-container">
+                            <img src="data/plots/fig_13_storage.png" alt="Figure 13: Storage Overhead">
+                        </div>
+                        <div class="plot-info">
+                            <h4>Figure 13. Storage Overhead vs. Simulation Time</h4>
+                            <p>Storage scaling up to 4,000 minutes. While PoW-based and MWSL schemes exceed 10,000 MB in storage requirements, LBDT remains under 200 MB by keeping microblocks off-chain for light nodes.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script src="data/simulation_log.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

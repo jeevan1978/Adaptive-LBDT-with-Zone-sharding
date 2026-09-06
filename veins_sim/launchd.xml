@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+    <basedir path="data" />
+    <copy file="config.sumocfg" type="config" />
+    <copy file="network.net.xml" />
+    <copy file="routes.rou.xml" />
+</launch>

@@ -1,0 +1,123 @@
+const simulationMetrics = {
+    "avg_latency": 2.4825998995234153,
+    "max_latency": 5.0,
+    "bft_msg_count": 302278,
+    "committee_safety": [
+        {
+            "step": 60,
+            "committee_size": 275,
+            "total_reputation": 162.3232020034828,
+            "malicious_reputation": 31.442194516453675,
+            "malicious_ratio": 0.19370117228083666
+        },
+        {
+            "step": 120,
+            "committee_size": 320,
+            "total_reputation": 218.33205969416,
+            "malicious_reputation": 41.86211774145589,
+            "malicious_ratio": 0.19173600890357756
+        },
+        {
+            "step": 180,
+            "committee_size": 309,
+            "total_reputation": 240.90792051738833,
+            "malicious_reputation": 46.92179749638375,
+            "malicious_ratio": 0.19477067169735093
+        },
+        {
+            "step": 240,
+            "committee_size": 304,
+            "total_reputation": 258.0197250638172,
+            "malicious_reputation": 50.178799907421535,
+            "malicious_ratio": 0.19447660404649522
+        },
+        {
+            "step": 300,
+            "committee_size": 304,
+            "total_reputation": 271.9706962922764,
+            "malicious_reputation": 52.85382759467808,
+            "malicious_ratio": 0.19433647931642647
+        },
+        {
+            "step": 360,
+            "committee_size": 304,
+            "total_reputation": 281.47430984068666,
+            "malicious_reputation": 54.675863251198784,
+            "malicious_ratio": 0.19424814748509414
+        },
+        {
+            "step": 420,
+            "committee_size": 304,
+            "total_reputation": 287.96162461515405,
+            "malicious_reputation": 55.91980643736016,
+            "malicious_ratio": 0.1941918702260904
+        },
+        {
+            "step": 480,
+            "committee_size": 304,
+            "total_reputation": 292.42323260288833,
+            "malicious_reputation": 56.7755876812945,
+            "malicious_ratio": 0.19415552990071733
+        },
+        {
+            "step": 540,
+            "committee_size": 304,
+            "total_reputation": 295.5239787087089,
+            "malicious_reputation": 57.370577317679924,
+            "malicious_ratio": 0.19413171671672966
+        },
+        {
+            "step": 600,
+            "committee_size": 304,
+            "total_reputation": 297.7050016643333,
+            "malicious_reputation": 57.789267121092855,
+            "malicious_ratio": 0.19411587577642075
+        },
+        {
+            "step": 660,
+            "committee_size": 348,
+            "total_reputation": 315.76043853092546,
+            "malicious_reputation": 60.61219524156791,
+            "malicious_ratio": 0.19195626761720366
+        },
+        {
+            "step": 720,
+            "committee_size": 368,
+            "total_reputation": 332.38774224747175,
+            "malicious_reputation": 65.19694389149684,
+            "malicious_ratio": 0.19614725696760485
+        },
+        {
+            "step": 780,
+            "committee_size": 368,
+            "total_reputation": 342.8039611425026,
+            "malicious_reputation": 67.49038841201383,
+            "malicious_ratio": 0.19687750452789626
+        },
+        {
+            "step": 840,
+            "committee_size": 368,
+            "total_reputation": 350.30540738212176,
+            "malicious_reputation": 69.13816253094488,
+            "malicious_ratio": 0.1973653876702145
+        },
+        {
+            "step": 900,
+            "committee_size": 368,
+            "total_reputation": 355.52942666100466,
+            "malicious_reputation": 70.28364935005897,
+            "malicious_ratio": 0.19768729134501162
+        },
+        {
+            "step": 960,
+            "committee_size": 368,
+            "total_reputation": 359.12307805890214,
+            "malicious_reputation": 71.07046715294094,
+            "malicious_ratio": 0.197900027859764
+        }
+    ],
+    "avg_normal_reputation": 0.4086934582287525,
+    "avg_malicious_reputation": 0.32563572168735266,
+    "blockchain_keyblocks": 16,
+    "blockchain_microblocks": 11623
+};
