@@ -324,12 +324,6 @@ Adaptive-LBDT-with-Zone-sharding/
 ├── docs/                           # Project presentation & academic artifacts
 │   └── 2023BCS069_Jeevan_Reddy_T.pdf # Academic defense & project presentation
 │
-├── report/                         # Full LaTeX Academic Thesis / MTP Report
-│   ├── MTP_Report_Template_2022.tex# Master LaTeX document
-│   ├── pkmthesis.cls               # University thesis class file
-│   ├── chapters/                   # Chapters 1 through 6 (tex & figures)
-│   └── FrontPages/                 # Title page, certificate, dedication, etc.
-│
 ├── src/                            # Core Python Implementation
 │   ├── auction/
 │   │   ├── __init__.py
@@ -527,8 +521,7 @@ If citing the original LBDT protocol and parallel-chain concept, please referenc
 ```
 *Official IEEE Xplore Link:* [https://doi.org/10.1109/TMC.2024.3497934](https://doi.org/10.1109/TMC.2024.3497934)
 
-### Implementation Deliverables & Academic Thesis
-- **Academic Thesis / Capstone Report:** Full LaTeX source code and compiled documentation with all mathematical formulations available in [`report/`](report/).
+### Implementation Deliverables & Presentation
 - **Seminar Presentation:** Slides and defense deck available in [`docs/2023BCS069_Jeevan_Reddy_T.pdf`](docs/2023BCS069_Jeevan_Reddy_T.pdf).
 
 ---

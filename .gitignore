@@ -80,3 +80,6 @@ veins_sim/*.log
 
 # SUMO intermediate / output files (keep network and route definitions)
 *.rou.alt.xml
+
+# Local academic thesis / university submission
+report/
